@@ -1,4 +1,5 @@
 const v = @import("vec.zig");
+const rl = @import("raylib");
 
 pub const TipoPieza = enum {
     Peon,
@@ -19,10 +20,10 @@ pub const Pieza = struct {
     color: Color,
     pos: v.Vec(usize),
 
-    pub fn new(tipo: TipoPieza, color: Color, pos: v.Vec(usize)) Pieza {
+    pub fn new(tipo: TipoPieza, c: Color, pos: v.Vec(usize)) Pieza {
         return Pieza{
             .tipo = tipo,
-            .color = color,
+            .color = c,
             .pos = pos,
         };
     }
@@ -37,6 +38,13 @@ pub const Pieza = struct {
             else => {
                 return "Vacia";
             },
+        }
+    }
+
+    pub fn get_color(s: Self) rl.Color {
+        switch (s.color) {
+            Color.Negras => return rl.Color.black,
+            Color.Blancas => return rl.Color.white,
         }
     }
 };
