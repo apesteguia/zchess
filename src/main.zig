@@ -1,6 +1,8 @@
 const rl = @import("raylib");
 const tablero = @import("tablero.zig");
 const pieza = @import("pieza.zig");
+const std = @import("std");
+const v = @import("vec.zig");
 
 pub fn main() anyerror!void {
     const screenWidth = 800;
@@ -10,8 +12,9 @@ pub fn main() anyerror!void {
     rl.initWindow(screenWidth, screenHeight, "zchess");
     defer rl.closeWindow();
 
-    rl.setTargetFPS(10);
-    const t = tablero.Tablero.new();
+    var t = tablero.Tablero.new();
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
 
     const peon: rl.Texture = rl.Texture.init("/home/mikel/Escritorio/zchess/src/static/peon.png");
     defer rl.unloadTexture(peon);
@@ -31,7 +34,23 @@ pub fn main() anyerror!void {
     const rey: rl.Texture = rl.Texture.init("/home/mikel/Escritorio/zchess/src/static/rey.png");
     defer rl.unloadTexture(rey);
 
+    var mouseX: usize = 1;
+    var mouseY: usize = 1;
+
+    rl.setTargetFPS(10);
     while (!rl.windowShouldClose()) {
+        //std.debug.print("{}{} ", .{ @divFloor(rl.getMouseX(), 100), @divFloor(rl.getMouseY(), 100) });
+        mouseX = @intCast(@divFloor(rl.getMouseX(), 100));
+        mouseY = @intCast(@divFloor(rl.getMouseY(), 100));
+        //std.debug.print("{} {}", .{ mouseX, mouseY });
+
+        if (rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
+            const a = try t.movimientos_posibles(allocator, v.Vec(usize).init(mouseX, mouseY));
+            std.debug.print("pressed", .{});
+            if (a.len > 0) {
+                std.debug.print("{}", .{a[0]});
+            }
+        }
         rl.beginDrawing();
         defer rl.endDrawing();
 

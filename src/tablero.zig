@@ -11,6 +11,41 @@ pub const Tablero = struct {
     valor_blancas: i32,
     valor_negras: i32,
 
+    const Self = @This();
+
+    pub fn movimientos_posibles(self: *Self, allocator: std.mem.Allocator, pos: v.Vec(usize)) ![]v.Vec(usize) {
+        var array = std.ArrayList(v.Vec(usize)).init(allocator);
+        defer array.deinit();
+
+        const current = self.piezas[pos.x][pos.y];
+
+        if (current) |pieza| {
+            switch (pieza.tipo) {
+                p.TipoPieza.Peon => {
+                    const peon_moves = try self.movimiento_peon(allocator, pos);
+                    for (peon_moves) |move| {
+                        try array.append(move);
+                    }
+                },
+                else => {},
+            }
+        }
+
+        return array.toOwnedSlice();
+    }
+
+    fn movimiento_peon(self: *Self, allocator: std.mem.Allocator, pos: v.Vec(usize)) ![]v.Vec(usize) {
+        var array = std.ArrayList(v.Vec(usize)).init(allocator);
+        defer array.deinit();
+
+        if (self.piezas[pos.x][pos.y + 1] == null) {
+            const forward = v.Vec(usize){ .x = pos.x, .y = pos.y + 1 };
+            try array.append(forward);
+        }
+
+        return array.toOwnedSlice();
+    }
+
     pub fn new() Tablero {
         var piezas: [N][N]?p.Pieza = undefined;
         for (piezas, 0..) |c, i| {
