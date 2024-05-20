@@ -45,10 +45,10 @@ pub fn main() anyerror!void {
         //std.debug.print("{} {}", .{ mouseX, mouseY });
 
         if (rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
-            const a = try t.movimientos_posibles(allocator, v.Vec(usize).init(mouseX, mouseY));
-            std.debug.print("pressed", .{});
-            if (a.len > 0) {
-                std.debug.print("{}", .{a[0]});
+            const a = try t.movimientos_posibles(allocator, v.Vec(usize).init(mouseY, mouseX));
+            //std.debug.print("pressed", .{});
+            for (a) |item| {
+                std.debug.print("\n{}{} ", .{ item.x, item.y });
             }
         }
         rl.beginDrawing();

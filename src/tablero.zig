@@ -18,14 +18,12 @@ pub const Tablero = struct {
         defer array.deinit();
 
         const current = self.piezas[pos.x][pos.y];
+        std.debug.print("{}", .{current.?.tipo});
 
         if (current) |pieza| {
             switch (pieza.tipo) {
                 p.TipoPieza.Peon => {
-                    const peon_moves = try self.movimiento_peon(allocator, pos);
-                    for (peon_moves) |move| {
-                        try array.append(move);
-                    }
+                    return try self.movimiento_peon(&array, pos);
                 },
                 else => {},
             }
@@ -34,14 +32,12 @@ pub const Tablero = struct {
         return array.toOwnedSlice();
     }
 
-    fn movimiento_peon(self: *Self, allocator: std.mem.Allocator, pos: v.Vec(usize)) ![]v.Vec(usize) {
-        var array = std.ArrayList(v.Vec(usize)).init(allocator);
-        defer array.deinit();
-
-        if (self.piezas[pos.x][pos.y + 1] == null) {
-            const forward = v.Vec(usize){ .x = pos.x, .y = pos.y + 1 };
-            try array.append(forward);
+    fn movimiento_peon(self: *Self, array: *std.ArrayList(v.Vec(usize)), pos: v.Vec(usize)) ![]v.Vec(usize) {
+        if (self.turno == p.Color.Blancas) {
+            std.debug.print("", .{});
         }
+        const forward = v.Vec(usize){ .x = pos.x, .y = pos.y + 1 };
+        try array.append(forward);
 
         return array.toOwnedSlice();
     }
